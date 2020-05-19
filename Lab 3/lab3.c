@@ -2,11 +2,11 @@
 #include "msp.h"
 
 //Global Variable Definitions, because scope is only this file
-uint32_t i;																					//Counter variable
-uint32_t delay    = 75000;																	//Delay for Bouncing, selectted after trying out a lots of values
+																				//Counter variable
+#define DELAY  75000																	//Delay for Bouncing, selectted after trying out a lots of values
 uint8_t RED_LED   = 1;																		//Variable to keep track of the status of RED_LED
 uint8_t RGB_LED   = 0;																		//Variable to keep track of the status of RGD_LED
-uint8_t j         = 0;																		//variable to keep track of the color array
+//uint8_t j         = 0;																		//variable to keep track of the color array
 
 #define OFF        (uint8_t) ((0<<2) | (0<<1) | (0<<0))							//0000 0000
 #define RED        (uint8_t) ((0<<2) | (0<<1) | (1<<0))							//0000 0001
@@ -20,8 +20,9 @@ uint8_t j         = 0;																		//variable to keep track of the color ar
 uint8_t colors[8] = {OFF, RED, GREEN, YELLOW, BLUE, PINK, SKYBLUE, WHITE};					//Array for colours
 
 void PORT1_IRQHandler(void){
-	
-	for ( i = 0; i < delay; i++){__asm volatile ("");}
+	static uint32_t i;
+	static uint8_t j = 0;
+	for ( i = 0; i < DELAY; i++){__asm volatile ("");}
 	if (!(P1IN & (uint8_t) (1<<1))){													//Here, Button 1 Pressed
 			
 		P1IFG &= (uint8_t) ~ BIT1;
@@ -43,11 +44,10 @@ void PORT1_IRQHandler(void){
 			}
 			else if (RGB_LED == 1 && RED_LED == 0){											//IF RGB_LED was selected byt Button 1, THEN
 				P2OUT &=(uint8_t) ~(((1<<2) | (1<<1) | (1<<0)));							//Clear the previous state of P2OUT by clearing the last 3 bits
+				j = j % 8;
 				P2OUT |= (uint8_t) (colors[j]);												//Make sure the 8 bit hex is properly casted to 8 bit int
-				if (j == 7){																//For the last state, Roll over to the beginning
-					j = 0;
-				}
-				else {j++;}																	//For any other state, Cycle through 8 states of RGB colours
+
+				j++;																	//For any other state, Cycle through 8 states of RGB colours
 			}
 																				//Ignore unexpected conditions and continue,				 
 		}
@@ -88,10 +88,10 @@ int main (){
 	NVIC_EnableIRQ(PORT1_IRQn);
 	//Global
 	__ASM("CPSIE I");
-	__ASM("WFI");
+	
 	
 	while (1){
-
+	__ASM("WFI");
 	}
 	
 	
