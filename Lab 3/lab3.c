@@ -8,14 +8,14 @@ uint8_t RED_LED   = 1;																		//Variable to keep track of the status o
 uint8_t RGB_LED   = 0;																		//Variable to keep track of the status of RGD_LED
 uint8_t j         = 0;																		//variable to keep track of the color array
 
-const uint8_t OFF        = (uint8_t) ((0<<2) | (0<<1) | (0<<0));							//0000 0000
-const uint8_t RED        = (uint8_t) ((0<<2) | (0<<1) | (1<<0));							//0000 0001
-const uint8_t GREEN      = (uint8_t) ((0<<2) | (1<<1) | (0<<0));							//0000 0010
-const uint8_t YELLOW     = (uint8_t) ((0<<2) | (1<<1) | (1<<0));							//0000 0011
-const uint8_t BLUE       = (uint8_t) ((1<<2) | (0<<1) | (0<<0));							//0000 0100
-const uint8_t PINK       = (uint8_t) ((1<<2) | (0<<1) | (1<<0));							//0000 0101
-const uint8_t SKYBLUE    = (uint8_t) ((1<<2) | (1<<1) | (0<<0));							//0000 0110
-const uint8_t WHITE      = (uint8_t) ((1<<2) | (1<<1) | (1<<0));							//0000 0111
+#define OFF        (uint8_t) ((0<<2) | (0<<1) | (0<<0))							//0000 0000
+#define RED        (uint8_t) ((0<<2) | (0<<1) | (1<<0))							//0000 0001
+#define GREEN      (uint8_t) ((0<<2) | (1<<1) | (0<<0))							//0000 0010
+#define YELLOW     (uint8_t) ((0<<2) | (1<<1) | (1<<0))							//0000 0011
+#define BLUE       (uint8_t) ((1<<2) | (0<<1) | (0<<0))							//0000 0100
+#define PINK       (uint8_t) ((1<<2) | (0<<1) | (1<<0))							//0000 0101
+#define SKYBLUE    (uint8_t) ((1<<2) | (1<<1) | (0<<0))							//0000 0110
+#define WHITE      (uint8_t) ((1<<2) | (1<<1) | (1<<0))							//0000 0111
 
 uint8_t colors[8] = {OFF, RED, GREEN, YELLOW, BLUE, PINK, SKYBLUE, WHITE};					//Array for colours
 
