@@ -6,7 +6,7 @@
 #define DELAY  75000																	//Delay for Bouncing, selectted after trying out a lots of values
 uint8_t RED_LED   = 1;																		//Variable to keep track of the status of RED_LED
 uint8_t RGB_LED   = 0;																		//Variable to keep track of the status of RGD_LED
-//uint8_t j         = 0;																		//variable to keep track of the color array
+
 
 #define OFF        (uint8_t) ((0<<2) | (0<<1) | (0<<0))							//0000 0000
 #define RED        (uint8_t) ((0<<2) | (0<<1) | (1<<0))							//0000 0001
