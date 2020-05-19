@@ -1,11 +1,10 @@
 #include <stdint.h>
 #include "msp.h"
 
-//Global Variable Definitions, because scope is only this file
+
 																				//Counter variable
 #define DELAY  75000																	//Delay for Bouncing, selectted after trying out a lots of values
-uint8_t RED_LED   = 1;																		//Variable to keep track of the status of RED_LED
-uint8_t RGB_LED   = 0;																		//Variable to keep track of the status of RGD_LED
+
 
 
 #define OFF        (uint8_t) ((0<<2) | (0<<1) | (0<<0))							//0000 0000
@@ -22,6 +21,8 @@ uint8_t colors[8] = {OFF, RED, GREEN, YELLOW, BLUE, PINK, SKYBLUE, WHITE};					/
 void PORT1_IRQHandler(void){
 	static uint32_t i;
 	static uint8_t j = 0;
+	static uint8_t RED_LED   = 1;																		//Variable to keep track of the status of RED_LED
+	static uint8_t RGB_LED   = 0;																		//Variable to keep track of the status of RGD_LED
 	for ( i = 0; i < DELAY; i++){__asm volatile ("");}
 	if (!(P1IN & (uint8_t) (1<<1))){													//Here, Button 1 Pressed
 			
