@@ -1,5 +1,5 @@
 /*
-SYSC 3310 Lab 3
+SYSC 3310 Lab 4
 Tanvir hossain, 101058988
 
 Please NOTE: the comments may look different on different editors,
@@ -106,21 +106,44 @@ void configure_Interrupts(){
 	
 }
 
+
+
+
+void TA0_N_IRQHandler(void){			//We are doing up mode, count to 0 //TODO See TA0_0
+	TA0CTL &= (uint16_t) ~ (BIT0);	//Clear the TAIFG flag
+	P1OUT ^= (uint8_t) BIT0;
+	
+}
+
 /*
 Main Function
 */
 int main (){
 	
-	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;										//Disbale Watchdog Timer
+	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;													//Disbale Watchdog Timer
 
-	configure_PORT1();																//Call the function to configure Port1
-	configure_PORT2();																//Call the function to configure Port2
-	configure_Interrupts();															//Configure Interrupts
+	configure_PORT1();																									//Call the function to configure Port1
+	//configure_PORT2();																								//Call the function to configure Port2
+	//configure_Interrupts();																						//Configure Interrupts
 	
-	while (1){																		//This while loop keeps the main function running forever
-	__ASM("WFI");																	//This in-line assembly ensures that the loop is waiting 
-	}																				//for an interrupt. It also ensures that while waiting the 
-																					//processor is reducing power usage.
+	TA0CTL &=~(uint16_t)(BIT0); 																				//BIT 0 = 0 for TAIFG flag
+	TA0CTL |= (uint16_t)(BIT1); 																				//BIT 1 For enabling interrupt
+	TA0CTL &= (uint16_t)(~((1<<5) | (1<<4)));														//BIT 5, 4 = 0 0	to Set the mode
+	TA0CTL |= (uint16_t) (BIT4);																				//At this point, BIT 5,4 = 0 1 , Up mode 
+	
+	TA0CTL &=~ (uint16_t) ((BIT7) | (BIT6));														//BIT 7,6 = 0 0, Divide by 1, for ID
+	
+	TA0CTL &=~ (uint16_t) (BIT9);																				//BIT 9,8 = 0, 0 , MCLK  for TASSSEL
+	TA0CTL &=~ (uint16_t) (BIT8);	
+
+	TA0EX0 &=~ (uint16_t) ((BIT2) | (BIT1)| (BIT0));  									// 000 divide by 1
+	TA0CCR0 = (uint16_t) (2999999);																				
+	TA0CTL |= (uint16_t)(BIT2);
+	
+	while (1){																													//This while loop keeps the main function running forever
+	__ASM("WFI");																												//This in-line assembly ensures that the loop is waiting 
+	}																																		//for an interrupt. It also ensures that while waiting the 
+																																			//processor is reducing power usage.
 	return 0;
 }
 
