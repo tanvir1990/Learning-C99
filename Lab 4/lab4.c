@@ -102,14 +102,14 @@ void configure_Interrupts(){
 	NVIC_SetPriority(PORT1_IRQn, 2);												//Encode the prioirity as 2
 	NVIC_ClearPendingIRQ(PORT1_IRQn);												//Clear previous IRQ
 	NVIC_EnableIRQ(PORT1_IRQn);														//Enable Interrupt
-	__ASM("CPSIE I");																//Enable Interrupt Globally
+																	//Enable Interrupt Globally
 	
 }
 
 
 
 
-void TA0_N_IRQHandler(void){			//We are doing up mode, count to 0 //TODO See TA0_0
+void TA0_N_IRQHandler(void){			
 	TA0CTL &= (uint16_t) ~ (BIT0);	//Clear the TAIFG flag
 	P1OUT ^= (uint8_t) BIT0;
 	
@@ -140,6 +140,7 @@ int main (){
 	TA0CCR0 = (uint16_t) (2999999);																				
 	TA0CTL |= (uint16_t)(BIT2);
 	
+	__ASM("CPSIE I");
 	while (1){																													//This while loop keeps the main function running forever
 	__ASM("WFI");																												//This in-line assembly ensures that the loop is waiting 
 	}																																		//for an interrupt. It also ensures that while waiting the 
