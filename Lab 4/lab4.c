@@ -23,7 +23,7 @@ void configure_PORT2(void){
 This function configures pin 1 and 4 of PORT1 to enbale Interrupts 
 */
 void configure_Port1_Interrupts(){
-	P1IES |= (uint8_t) ((1<<4) | (1<<1));											//Edge Select, for switches we set the bits
+	P1IES &=~ (uint8_t) ((1<<4) | (1<<1));											//Edge Select, for switches we set the bits, changed to rising edge
 	P1IFG &= (uint8_t) ~((1<<4) | (1<<1));											//Clear the previous flags
 	P1IE  |= (uint8_t) ~((1<<4) | (1<<1));											//Enable Interrupts by setting pin 1 and 4 to 1
 	
@@ -31,13 +31,14 @@ void configure_Port1_Interrupts(){
 	NVIC_SetPriority(35, 2);												//Encode the prioirity as 2
 	NVIC_ClearPendingIRQ(PORT1_IRQn);												//Clear previous IRQ
 	NVIC_EnableIRQ(PORT1_IRQn);														//Enable Interrupt
+	//__ASM("CPSIE I");
 }
 
 void configure_TimerA_Interrupts(){
-	NVIC_SetPriority(8, 3);
+	NVIC_SetPriority(8, 2);
 	NVIC_ClearPendingIRQ(8);
 	NVIC_EnableIRQ(8);
-	
+	//__ASM("CPSIE I");
 	
 }
 
@@ -64,8 +65,7 @@ void PORT1_IRQHandler(){
 	
 	if(!(P1IN & (uint8_t) (BIT1))){													// Button 1 is pressed
 	P1IFG &= (uint8_t) ~(1<<1);
-		TA0CTL &= (uint16_t) ~ (BIT0);
-	P1OUT &=~ (uint8_t) BIT0;
+	//P1OUT &=~ (uint8_t) BIT0;
 	P2OUT |= (uint8_t) BIT0;
 	}
 }
@@ -87,11 +87,15 @@ int main (){
 	configure_PORT2();	
 	configure_TA0CTL_bits();
 	
-	//configure_Port1_Interrupts();
 	configure_TimerA_Interrupts();
+	configure_Port1_Interrupts();
+	
 	
 	__ASM("CPSIE I");
-	while (1){																							
+	
+	while (1){	
+			while (!(P1IFG &(uint8_t) (1<<1)) )
+			{}
 	__ASM("WFI");																						
 	}																												
 																													
