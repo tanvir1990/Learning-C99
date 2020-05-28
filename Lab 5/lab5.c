@@ -38,24 +38,28 @@ void BSP_buzzer_set(uint16_t duty){
 int main (){
 //	//Part 1
 	uint32_t pwm = 880;
-	uint16_t x_pos, y_pos;
-	uint8_t select;
-	
+	uint16_t x_pos = 0;
+	uint16_t y_pos = 0;
+	uint8_t select;			//not selectted
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;										//Disbale Watchdog Timer
+	
+	
 	BSP_Joystick_Init();
-	BSP_Joystick_Input(&x_pos, &y_pos, &select);
+	while (1){
+			//Wait for the Joystick to be pressed
+			BSP_Joystick_Input(&x_pos, &y_pos, &select);
+		
+		if (select == 1){
+				BSP_buzzer_init(50, pwm);
+				BSP_buzzer_set(0);
+				//select = 1; 								//un select the joy stick
+		}
+		
+		
+	}
 
-//	
-//	//Change the PWM values
-//	
-//	// Part 2
-//	
-//	
-//	
-//	
-//	BSP_buzzer_init(512);
-	BSP_buzzer_init(50, pwm);
-	BSP_buzzer_set(0);
+
+
 	return 0;
 	
 }
