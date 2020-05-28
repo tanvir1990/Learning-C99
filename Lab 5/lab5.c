@@ -5,7 +5,7 @@
 
 static uint32_t SubsystemFrequency = 3000000; // cycles/second
 static uint32_t PWMCycles;  
-static uint32_t tone_frequency = 2048;
+static uint32_t tone_frequency = 0;
 
 
 void BSP_buzzer_init(uint16_t duty, uint32_t pwm){
@@ -38,12 +38,12 @@ void BSP_buzzer_set(uint16_t duty){
 int main (){
 //	//Part 1
 	uint32_t pwm = 880;
-//	uint16_t x_pos, y_pos;
-//	uint8_t select;
+	uint16_t x_pos, y_pos;
+	uint8_t select;
 	
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;										//Disbale Watchdog Timer
-//	BSP_Joystick_Init();
-//	BSP_Joystick_Input(&x_pos, &y_pos, &select);
+	BSP_Joystick_Init();
+	BSP_Joystick_Input(&x_pos, &y_pos, &select);
 
 //	
 //	//Change the PWM values
