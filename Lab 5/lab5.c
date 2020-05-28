@@ -8,14 +8,14 @@ static uint32_t PWMCycles;
 static uint32_t tone_frequency = 2048;
 
 
-void BSP_buzzer_init(uint16_t duty){
+void BSP_buzzer_init(uint16_t duty, uint32_t pwm){
   if(duty > 1023){
     return;                        // invalid input
   }
   TA0CTL &= ~0x0030;               // halt Timer A0
 
   TA0CTL = 0x0200;
-
+	tone_frequency = pwm;
   TA0CCTL4 = 0x00E0;
   PWMCycles = SubsystemFrequency/tone_frequency;
   TA0CCR4 = (duty*PWMCycles)>>10;  // defines when output signal is cleared
@@ -37,7 +37,7 @@ void BSP_buzzer_set(uint16_t duty){
 
 int main (){
 //	//Part 1
-//	uint32_t pwm = 2048;
+	uint32_t pwm = 880;
 //	uint16_t x_pos, y_pos;
 //	uint8_t select;
 	
@@ -54,7 +54,7 @@ int main (){
 //	
 //	
 //	BSP_buzzer_init(512);
-	BSP_buzzer_init(50);
+	BSP_buzzer_init(50, pwm);
 	BSP_buzzer_set(0);
 	return 0;
 	
