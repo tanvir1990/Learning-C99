@@ -7,7 +7,7 @@ static uint32_t SubsystemFrequency = 3000000; // cycles/second
 static uint32_t PWMCycles;  
 static uint32_t tone_frequency = 0;
 
-
+#define DELAY      75000
 
 void BSP_buzzer_init(uint16_t duty, uint32_t pwm){
   if(duty > 1023){
@@ -59,37 +59,45 @@ uint32_t select_frequency (uint16_t x_pos, uint16_t y_pos){
 		return  988;				//Q2
 	}
 	else if ((x_pos >=682 && x_pos < 1023) && (y_pos >=682 && y_pos < 1023)) {
-		return 988;				//Q3
+		return 1109;				//Q3
 	}
 			else if ((x_pos >=682 && x_pos < 1023) && (y_pos >=341 && y_pos < 682)) {
-		return  988;				//Q5
+		return  1319;				//Q5
 			}
 			else if ((x_pos >=341 && x_pos < 682) && (y_pos >=341 && y_pos < 682)) {
-		return 988;				//Q0
+		return 2048;				//Q0
 			}
 			else return 2048;
 }
 
 int main (){
 //	//Part 1
+	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;	
+	//uint32_t i;
 	uint32_t pwm = 0;
 	uint16_t x_pos = 0;
 	uint16_t y_pos = 0;
 	uint8_t select;			//not selectted
-	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;										//Disbale Watchdog Timer
+
+										//Disbale Watchdog Timer
 	
 	
 	BSP_Joystick_Init();
 	while (1){
-			//Wait for the Joystick to be pressed
-			BSP_Joystick_Input(&x_pos, &y_pos, &select);
+			
+		BSP_Joystick_Input(&x_pos, &y_pos, &select);
+		//for ( i = 0; i < DELAY; i++){__asm volatile ("");}
 		
-		pwm = select_frequency(x_pos, y_pos);
-		if (select == 0){
-				BSP_buzzer_init(50, pwm);
-				BSP_buzzer_set(0);
-				//select = 1; 								//un select the joy stick
+		//This function stores the selected frequency for quadrants into pwm
+		pwm = select_frequency(x_pos, y_pos);										
+		if ((x_pos >=341 && x_pos < 682) && (y_pos >=341 && y_pos < 682)) {
+							BSP_buzzer_init(0, pwm);//Q0
 		}
+		else 
+		{BSP_buzzer_init(50, pwm);
+			BSP_buzzer_set(0);
+		}
+
 		
 		
 	}
