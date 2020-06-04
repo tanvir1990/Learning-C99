@@ -3,6 +3,17 @@
 /*
 This function configures all the pins for PORT1
 */
+
+#define OFF        (uint8_t) ((0<<2) | (0<<1) | (0<<0))								//0000 0000
+#define RED        (uint8_t) ((0<<2) | (0<<1) | (1<<0))								//0000 0001
+#define GREEN      (uint8_t) ((0<<2) | (1<<1) | (0<<0))								//0000 0010
+#define YELLOW     (uint8_t) ((0<<2) | (1<<1) | (1<<0))								//0000 0011
+#define BLUE       (uint8_t) ((1<<2) | (0<<1) | (0<<0))								//0000 0100
+#define PINK       (uint8_t) ((1<<2) | (0<<1) | (1<<0))								//0000 0101
+#define SKYBLUE    (uint8_t) ((1<<2) | (1<<1) | (0<<0))								//0000 0110
+#define WHITE      (uint8_t) ((1<<2) | (1<<1) | (1<<0))								//0000 0111
+
+uint8_t colors[8] = {OFF, RED, GREEN, YELLOW, BLUE, PINK, SKYBLUE, WHITE};			//Array for colours
 void configure_PORT1 (void){
 	P1SEL0 &= (uint8_t) (~(1<<0));						//Clearing bits 0,1,4, to set them as GPIO
 	P1SEL1 &= (uint8_t) (~ (1<<0));						//Clearing bits 0,1,4
@@ -62,7 +73,7 @@ void configure_TA1CTL_bits(){
 	TA1CTL |= (uint16_t) (BIT8);	
 
 
-	TA1CCR0 = (uint16_t) (32768 - 1);	
+	TA1CCR0 = (uint16_t) (16384 - 1);	
 	
 	TA1CTL &= (uint16_t)(~((1<<5) | (1<<4)));								//BIT 5, 4 = 0 0	to Set the mode
 	TA1CTL |= (uint16_t) (BIT4);														//At this point, BIT 5,4 = 0 1 , Up mode  
@@ -78,8 +89,13 @@ void TA0_N_IRQHandler(void){
 
 void TA1_0_IRQHandler(void){
 	
+	static uint8_t j;
 	TA1CCTL0 &=~ (uint16_t) BIT0; 
-	P2OUT ^= (uint8_t) BIT0;
+	//P2OUT ^= (uint8_t) BIT0;
+	P2OUT &=(uint8_t) ~(((1<<2) | (1<<1) | (1<<0)));
+	j = j % 8;															//Modulo calculation to loop over the array for colours
+	P2OUT |= (uint8_t) (colors[j]);										//Make sure the 8 bit hex is properly casted to 8 bit int
+	j++;
 }
 
 
