@@ -1,3 +1,9 @@
+/*
+SYSC 3310
+Tanvir Hossain, 101058988
+Date: 4th June 2020
+*/
+
 #include <stdint.h>
 #include "msp.h"
 /*
