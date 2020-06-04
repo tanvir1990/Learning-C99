@@ -25,9 +25,9 @@ void configure_TimerA_Interrupts(){
 	NVIC_ClearPendingIRQ(TA0_N_IRQn);
 	NVIC_EnableIRQ(TA0_N_IRQn);
 	
-	NVIC_SetPriority(TA1_N_IRQn, 2);
-	NVIC_ClearPendingIRQ(TA1_N_IRQn);
-	NVIC_EnableIRQ(TA1_N_IRQn);
+	NVIC_SetPriority(TA1_0_IRQn, 2);
+	NVIC_ClearPendingIRQ(TA1_0_IRQn);
+	NVIC_EnableIRQ(TA1_0_IRQn);
 }
 
 void configure_TA0CTL_bits(){
@@ -50,6 +50,8 @@ void configure_TA0CTL_bits(){
 
 void configure_TA1CTL_bits(){
 	
+	TA1CCTL0 |= (uint16_t) BIT4;
+	TA1CCTL0 &=~ (uint16_t) BIT0;
 	TA1CTL &=~(uint16_t)(BIT0); 														//BIT 0 = 0 for TAIFG flag
 	TA1CTL |= (uint16_t)(BIT1); 														//BIT 1 For enabling interrupt
 	TA1CTL |= (uint16_t)(BIT2);															//BIT 2, Reset the counter
@@ -74,10 +76,9 @@ void TA0_N_IRQHandler(void){
 	P1OUT ^= (uint8_t) BIT0;
 }
 
-void TA1_N_IRQHandler(void){
-	TA1CTL &=~(uint16_t)(BIT0);
+void TA1_0_IRQHandler(void){
 	
-	//TA1CCTL0 &=~ (uint16_t) BIT0; 
+	TA1CCTL0 &=~ (uint16_t) BIT0; 
 	P2OUT ^= (uint8_t) BIT0;
 }
 
