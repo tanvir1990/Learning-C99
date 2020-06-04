@@ -61,7 +61,7 @@ void configure_TA0CTL_bits(){
 	TA0CTL |= (uint16_t) (BIT8);	
 
 
-	TA0CCR0 = (uint16_t) (16384 -1);	
+	TA0CCR0 = (uint16_t) (32768 -1);	
 	TA0CTL &= (uint16_t)(~((1<<5) | (1<<4)));								//BIT 5, 4 = 0 0	to Set the mode
 	TA0CTL |= (uint16_t) (BIT4);														//At this point, BIT 5,4 = 0 1 , Up mode 
 }
@@ -80,7 +80,7 @@ void configure_TA1CTL_bits(){
 	TA1CTL |= (uint16_t) (BIT8);	
 
 
-	TA1CCR0 = (uint16_t) (65535);	
+	TA1CCR0 = (uint16_t) (3268 - 1);														//Generate interrupt after 0.1 sec
 	
 	TA1CTL &= (uint16_t)(~((1<<5) | (1<<4)));								//BIT 5, 4 = 0 0	to Set the mode
 	TA1CTL |= (uint16_t) (BIT5) | (BIT4);														//At this point, BIT 5,4 = 1 1 , Up/Down mode  
@@ -95,20 +95,16 @@ void TA0_N_IRQHandler(void){
 
 void TA1_0_IRQHandler(void){
 	static uint8_t j = 0;
-	
 	TA1CTL |= (uint16_t)(BIT2);
-	TA1CCTL0 &=~ (uint16_t) BIT0; 
-	//P2OUT ^= (uint8_t) BIT0;
-	P2OUT &=(uint8_t) ~(((1<<2) | (1<<1) | (1<<0)));
+	TA1CCTL0 &=~ (uint16_t) BIT0;
 	
+	P2OUT &=(uint8_t) ~(((1<<2) | (1<<1) | (1<<0)));
 	j = j % 8;															//Modulo calculation to loop over the array for colours
 	P2OUT |= (uint8_t) (colors[j]);										//Make sure the 8 bit hex is properly casted to 8 bit int
 	j++;
 	
-	//P2OUT ^= (uint8_t) BIT0;
-	
 																//BIT 2, Reset the counter
-	TA1CCR0 = (uint16_t) (16384-1);	
+	TA1CCR0 = (uint16_t) (16384-1);	 //0.5 Sec
 	
 }
 
