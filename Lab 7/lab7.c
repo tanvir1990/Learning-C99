@@ -29,7 +29,7 @@ task_ctrl_blk Task_list[8];
 List that matches events to a corresponding task
 (just 2 events for now)
 */
-task_ctrl_blk *Event_task_list[2];
+task_ctrl_blk *Event_task_list[10];
 
 /*
 Pointer to element in "Task_list" that is currently executing
@@ -315,29 +315,29 @@ void TA0_N_IRQHandler()
 Port 1 Interrupt handler
 Processes events for aperiodic tasks 
 */
-void PORT1_IRQHandler(void)
-{
-	if(P1IFG & BIT1)
-	{
-		P1IFG &= (uint8_t)(~BIT1);
-		//If corresponding event-task is initialized
-		if(Event_task_list[SWITCH_P1_1])
-		{
-			//Activate task (schedule will eventually run it)
-			Event_task_list[SWITCH_P1_1]->state = TASK_SUSPENDED;
-		}
-	}
-	if(P1IFG & BIT4)
-	{
-		P1IFG &= (uint8_t)(~BIT4);
-		//If corresponding event-task is initialized
-		if(Event_task_list[SWITCH_P1_4])
-		{
-			//Activate task (schedule will eventually run it)
-			Event_task_list[SWITCH_P1_4]->state = TASK_SUSPENDED;
-		}
-	}
-}
+//void PORT1_IRQHandler(void)
+//{
+//	if(P1IFG & BIT1)
+//	{
+//		P1IFG &= (uint8_t)(~BIT1);
+//		//If corresponding event-task is initialized
+//		if(Event_task_list[SWITCH_P1_1])
+//		{
+//			//Activate task (schedule will eventually run it)
+//			Event_task_list[SWITCH_P1_1]->state = TASK_SUSPENDED;
+//		}
+//	}
+//	if(P1IFG & BIT4)
+//	{
+//		P1IFG &= (uint8_t)(~BIT4);
+//		//If corresponding event-task is initialized
+//		if(Event_task_list[SWITCH_P1_4])
+//		{
+//			//Activate task (schedule will eventually run it)
+//			Event_task_list[SWITCH_P1_4]->state = TASK_SUSPENDED;
+//		}
+//	}
+//}
 
 /*
 Configures Timer for system tick, NVIC and CPU interrupts,
@@ -352,8 +352,12 @@ void Task_schedule(void)
 	TA0CTL |= (uint16_t)BIT4; //UP MODE
 	
 	//enable NVIC timer interrupts
+	//NVIC_EnableIRQ(TA0_N_IRQn);
+	//NVIC_SetPriority(TA0_N_IRQn, 2);
+	
+	NVIC_SetPriority(TA0_N_IRQn, 2);							//Configure NVIC for TA0
+	NVIC_ClearPendingIRQ(TA0_N_IRQn);
 	NVIC_EnableIRQ(TA0_N_IRQn);
-	NVIC_SetPriority(TA0_N_IRQn, 2);
 	
 	//enable CPU interrupts
 	__ASM("CPSIE I");
@@ -365,12 +369,12 @@ void Task_schedule(void)
 void configure_TA0CTL_bits(){
 																//For TA0 we will be using TAIFG flag
 	TA0CTL &=~ (uint16_t) (BIT0); 								//BIT 0 = 0 for clearing previous TAIFG flag, 
-	TA0CTL |=  (uint16_t) (BIT1); 								//BIT 1 For enabling interrupt
+	//TA0CTL |=  (uint16_t) (BIT1); 								//BIT 1 For enabling interrupt
 	TA0CTL |=  (uint16_t) (BIT2);									//BIT 2, Reset the counter
 	TA0CTL &=~ (uint16_t) ((BIT7) | (BIT6));					//For ID BIT 7,6 = 0 0, Divide by 1, 
 	TA0EX0 &=~ (uint16_t) ((BIT2) | (BIT1)| (BIT0));  			// 000 divide by 1
 	
-	//TA0CTL &=~ (uint16_t) (BIT9);								//BIT 9,8 = 0, 1 , ACLK  for TASSSEL
+	TA0CTL &=~ (uint16_t) ((BIT9) | (BIT8));								//BIT 9,8 = 0, 1 , ACLK  for TASSSEL
 	//TA0CTL |=  (uint16_t) (BIT8);	
 
 	//TA0CCR0 =  (uint16_t) (327 - 1);							//32767 Ticks will give us 1 sec
@@ -427,15 +431,16 @@ int main (){
 	Task_add( (uint32_t) printNumber, period, priority);
 	
 	configure_PORT1();
-	configure_Port1_Interrupts();
+	//configure_Port1_Interrupts();
 	configure_TA0CTL_bits();
+	Task_schedule();	
 	
-	Task_schedule();
 
 	//__ASM("CPSIE I");
-	while (1){																							
-		__ASM("WFI");											//Let the compiler know that this Loop is importatnt		
-	}	
+//	while (1){																							
+//		__ASM("WFI");											//Let the compiler know that this Loop is importatnt
+//	
+//	}	
 		
 
 	return 0;
