@@ -13,6 +13,7 @@ Tanvir Hossain, 101058988
 #define RED        (uint8_t) ((0<<2) | (0<<1) | (1<<0))
 #define ST7735_RED     0xF800
 #define ST7735_YELLOW  0xFFE0
+#define ST7735_BLACK   0x0000
 
 void idle_thread(void)
 {
@@ -29,7 +30,7 @@ task_ctrl_blk Task_list[8];
 List that matches events to a corresponding task
 (just 2 events for now)
 */
-task_ctrl_blk *Event_task_list[10];
+task_ctrl_blk *Event_task_list[5];
 
 /*
 Pointer to element in "Task_list" that is currently executing
@@ -402,31 +403,42 @@ void configure_Port1_Interrupts(){
 }
 
 void printNumber(){
-	uint32_t n = 7;
 	uint32_t newX = 0;
 	uint32_t newY = 0;
 	uint16_t textColor = ST7735_YELLOW;
+	
+	uint16_t width = 128;
+	uint16_t height = 128;
+	uint16_t color = ST7735_BLACK;
+	static uint32_t n;
+	//n = n + (uint32_t)1;
+	n =0;
+	BSP_LCD_FillRect(0, 0, width, height, color);
+	
 	BSP_LCD_SetCursor(newX, newY);
 	BSP_LCD_OutUDec(n,  textColor);
 	
 	P1OUT ^= (uint8_t)BIT0;
 	Task_stop((uint32_t)printNumber);
+	
 }
 
 
 
-
+extern uint32_t Messageindex;
 
 int main (){
 	
 	//uint32_t n = 8;
 	//void (*fun_ptr)() = &printNumber;
-	uint32_t period = 100;
+	uint32_t period = 200;
 	uint32_t priority = 1;
+
 
 	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;
 	
 	BSP_LCD_Init();
+	
 	Task_list_init();
 	Task_add( (uint32_t) printNumber, period, priority);
 	
